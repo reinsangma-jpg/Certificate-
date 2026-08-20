@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#071a3a">
+<meta name="description" content="NSS Certificate Portal">
+<title>NSS Certificate Portal</title>
+<style>
+:root{
+  --bg1:#061632;--bg2:#0b2c59;--card:#a9d8ef;--card2:#d7eff9;
+  --text:#f8fbff;--ink:#08203f;--muted:#d8e8f5;--pink:#ff76a8;
+  --pink2:#ff9fc2;--cyan:#63d8ff;--shadow:rgba(0,0,0,.28);
+  --success:#72e6bf;--danger:#ff7898;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--text);background:linear-gradient(145deg,var(--bg1),var(--bg2));
+  overflow-x:hidden;transition:background .65s ease;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+body:before,body:after{
+  content:"";position:fixed;z-index:-2;border-radius:50%;filter:blur(2px);opacity:.22;pointer-events:none;
+}
+body:before{width:330px;height:330px;right:-110px;top:60px;background:#65cfff}
+body:after{width:270px;height:270px;left:-130px;bottom:40px;background:#ff82b1}
+.bg-orb{position:fixed;z-index:-1;width:150px;height:150px;border-radius:42%;background:rgba(255,255,255,.08);filter:blur(.2px);animation:float 12s ease-in-out infinite;pointer-events:none}
+.bg-orb.one{left:8%;top:13%}.bg-orb.two{right:11%;bottom:18%;width:110px;height:110px;animation-delay:-5s}.bg-orb.three{left:42%;bottom:-40px;width:190px;height:190px;animation-delay:-8s}
+@keyframes float{50%{transform:translateY(-22px) rotate(8deg)}}
+.shell{width:min(100%,1080px);margin:auto;padding:18px 14px 42px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.05em}
+.brand-mark{width:44px;height:44px;border-radius:15px;background:linear-gradient(145deg,#e7f8ff,#8bc8e8);box-shadow:inset 4px 4px 8px rgba(255,255,255,.75),inset -5px -5px 9px rgba(40,106,145,.3),8px 8px 16px var(--shadow);display:grid;place-items:center;color:#0a2d55}
+.brand-mark span{font-size:13px}
+.icon-btn,.theme-btn{
+  border:0;color:#0b2b50;font-weight:900;background:linear-gradient(145deg,#dff6ff,#9bd3ec);
+  border-radius:18px;padding:11px 14px;box-shadow:inset 3px 3px 7px rgba(255,255,255,.8),inset -4px -4px 8px rgba(36,96,135,.3),7px 7px 14px var(--shadow);
+}
+.theme-btn{color:#fff;background:linear-gradient(145deg,#ff9fc2,#ef5f93)}
+.theme-btn:active,.primary:active,.secondary:active,.choice:active{transform:translateY(2px);box-shadow:inset 3px 3px 7px rgba(0,0,0,.12),3px 3px 8px var(--shadow)}
+.card{
+  background:linear-gradient(145deg,rgba(214,241,252,.96),rgba(143,201,229,.92));
+  color:var(--ink);border-radius:30px;padding:24px;
+  box-shadow:inset 5px 5px 11px rgba(255,255,255,.82),inset -7px -7px 13px rgba(42,102,143,.28),12px 14px 30px var(--shadow);
+}
+.hero{padding:32px 22px;text-align:center;position:relative;overflow:hidden}
+.eyebrow{font-size:.78rem;letter-spacing:.16em;font-weight:900;color:#18517c;text-transform:uppercase}
+h1{font-size:clamp(2rem,8vw,4rem);line-height:.98;margin:10px 0 8px;color:#082452;letter-spacing:-.04em}
+.subtitle{font-size:clamp(1rem,3.8vw,1.25rem);font-weight:800;color:#24597e}
+.portal-note{margin:16px auto 22px;max-width:640px;color:#2b6083;font-weight:650}
+.field-label{display:block;text-align:left;font-weight:950;margin:0 0 8px 4px;color:#123e63}
+.input{
+  width:100%;border:0;outline:none;color:#082452;background:linear-gradient(145deg,#e8f8ff,#acd9ec);
+  padding:17px 18px;border-radius:19px;font-size:1.05rem;font-weight:750;
+  box-shadow:inset 5px 5px 10px rgba(60,112,140,.24),inset -5px -5px 10px rgba(255,255,255,.9),6px 7px 14px rgba(0,0,0,.14);
+  transition:.2s;
+}
+.input:focus{box-shadow:inset 5px 5px 10px rgba(60,112,140,.24),inset -5px -5px 10px rgba(255,255,255,.9),0 0 0 4px rgba(255,118,168,.35),7px 8px 16px rgba(0,0,0,.16)}
+.actions{display:grid;gap:12px;margin-top:15px}
+.primary,.secondary{
+  border:0;border-radius:19px;padding:16px 18px;font-weight:950;letter-spacing:.03em;
+  transition:.18s;box-shadow:inset 4px 4px 8px rgba(255,255,255,.42),inset -5px -5px 9px rgba(110,22,58,.25),8px 9px 18px rgba(0,0,0,.22)
+}
+.primary{color:#fff;background:linear-gradient(145deg,#ff9fc2,#ed5a92)}
+.secondary{color:#0a2b50;background:linear-gradient(145deg,#e7f9ff,#a6d8ed)}
+.primary:disabled{opacity:.48;cursor:not-allowed;transform:none}
+.robot{
+  display:flex;align-items:center;gap:14px;text-align:left;margin-top:16px;padding:16px;border-radius:20px;
+  background:linear-gradient(145deg,#dff7ff,#a9d8ed);
+  box-shadow:inset 4px 4px 8px rgba(255,255,255,.8),inset -5px -5px 9px rgba(40,100,140,.25),6px 7px 14px rgba(0,0,0,.15);
+  user-select:none;-webkit-tap-highlight-color:transparent
+}
+.robot-box{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;font-size:20px;font-weight:1000;background:#d9f2ff;box-shadow:inset 3px 3px 6px rgba(0,0,0,.15),inset -3px -3px 6px rgba(255,255,255,.8);color:transparent;flex:0 0 auto}
+.robot.checked{background:linear-gradient(145deg,#ffb0cc,#f06a9b);color:#fff;animation:pop .32s ease}
+.robot-title{font-weight:950;color:#0b3157}.robot-sub{font-size:.78rem;color:#46718e;margin-top:2px}
+@keyframes pop{50%{transform:scale(1.13)}}
+.hidden{display:none!important}
+.section{margin-top:15px}
+.status{margin-top:14px;border-radius:18px;padding:14px 16px;font-weight:850;display:flex;gap:10px;align-items:flex-start}
+.status.error{background:linear-gradient(145deg,#ffe2ea,#f7b6ca);color:#721f3e;box-shadow:inset 3px 3px 7px rgba(255,255,255,.7),inset -4px -4px 7px rgba(160,55,88,.2)}
+.status.success{background:linear-gradient(145deg,#ddfff3,#a6e9d3);color:#11533f}
+.status strong{display:block}
+.center{text-align:center}
+.welcome-icon{font-size:48px;margin-bottom:5px}
+.verified-name{font-size:clamp(1.7rem,7vw,2.6rem);font-weight:1000;color:#082452;margin:4px 0 20px}
+.grid{display:grid;gap:14px}
+.choice{
+  border:0;text-align:left;border-radius:23px;padding:18px;background:linear-gradient(145deg,#e7f9ff,#a9d8ed);
+  color:#0a3158;box-shadow:inset 4px 4px 8px rgba(255,255,255,.85),inset -5px -5px 10px rgba(39,101,141,.25),7px 8px 15px rgba(0,0,0,.15);
+  transition:.18s;position:relative
+}
+.choice .tick{position:absolute;right:14px;top:14px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#ff78a8;color:#fff;opacity:0;transform:scale(.7);transition:.2s}
+.choice.selected{transform:translateY(-2px);outline:3px solid rgba(255,118,168,.32);box-shadow:inset 4px 4px 8px rgba(255,255,255,.85),inset -5px -5px 10px rgba(39,101,141,.2),0 11px 22px rgba(238,84,137,.28)}
+.choice.selected .tick{opacity:1;transform:scale(1)}
+.choice-title{font-weight:1000;font-size:1.05rem}.choice-desc{font-size:.8rem;color:#4b7691;margin-top:3px}
+.processing{text-align:center;overflow:hidden}
+.scene{position:relative;height:180px;margin:10px 0 6px;border-radius:24px;background:linear-gradient(180deg,#dff7ff 0%,#c4eafa 68%,#a8d8c2 68%,#8cc39e 100%);box-shadow:inset 4px 4px 10px rgba(255,255,255,.75),inset -6px -6px 10px rgba(50,115,122,.2);overflow:hidden}
+.cloud{position:absolute;width:65px;height:24px;border-radius:30px;background:#fff;opacity:.7;top:24px;animation:cloud 13s linear infinite}
+.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}.cloud:before{width:28px;height:28px;left:12px;top:-14px}.cloud:after{width:38px;height:38px;left:31px;top:-20px}
+.cloud.c2{top:50px;animation-duration:18s;animation-delay:-7s;transform:scale(.75)}
+@keyframes cloud{from{left:-100px}to{left:110%}}
+.path{position:absolute;left:8%;right:8%;bottom:27px;height:24px;border-radius:50%;background:rgba(235,205,157,.9);transform:perspective(80px) rotateX(8deg)}
+.destination{position:absolute;right:8%;bottom:48px;font-weight:1000;color:#17496a;font-size:.72rem;background:#fff;padding:9px 11px;border-radius:14px;box-shadow:4px 5px 9px rgba(0,0,0,.12)}
+.runner{position:absolute;left:8%;bottom:39px;width:58px;height:78px;animation:run 30s linear forwards}
+@keyframes run{from{left:8%}to{left:82%}}
+.runner .head{position:absolute;left:18px;top:0;width:25px;height:25px;border-radius:50%;background:#eab08b}
+.runner .body{position:absolute;left:15px;top:24px;width:30px;height:36px;border-radius:12px 12px 8px 8px;background:#2b73c7}
+.runner .arm,.runner .leg{position:absolute;width:9px;border-radius:8px;background:#183d68;transform-origin:top center}
+.runner .arm{height:28px;top:27px;left:13px;animation:arm .35s infinite alternate}
+.runner .arm.a2{left:38px;animation-delay:-.18s}
+.runner .leg{height:30px;top:52px;left:20px;animation:leg .35s infinite alternate}
+.runner .leg.l2{left:35px;animation-delay:-.18s}
+@keyframes arm{to{transform:rotate(35deg)}}@keyframes leg{to{transform:rotate(-38deg)}}
+.progress-wrap{height:17px;border-radius:20px;background:#b4d9e9;box-shadow:inset 4px 4px 7px rgba(43,99,130,.22),inset -4px -4px 7px rgba(255,255,255,.7);overflow:hidden;margin:15px 0 9px}
+.progress{height:100%;width:0;border-radius:20px;background:linear-gradient(90deg,#ff78a8,#ffafd0,#66d9ff);transition:width .25s linear;box-shadow:0 3px 8px rgba(255,102,159,.3)}
+.progress-label{font-weight:950;color:#17496a}.process-msg{min-height:25px;color:#386984;font-weight:750}
+.cert-wrap{background:rgba(255,255,255,.09);padding:10px;border-radius:25px}
+.cert-img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:8px;box-shadow:0 18px 35px rgba(0,0,0,.3);background:#fff}
+.cert-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+.footer{text-align:center;color:rgba(232,244,255,.68);font-size:.76rem;padding:20px 10px}
+.theme-panel{position:fixed;inset:auto 12px 16px 12px;z-index:20;max-width:520px;margin:auto;padding:18px;border-radius:26px;background:linear-gradient(145deg,#dff6ff,#9acde6);color:#0b2d50;box-shadow:0 20px 55px rgba(0,0,0,.38),inset 4px 4px 9px rgba(255,255,255,.8),inset -6px -6px 10px rgba(35,92,130,.25);transform:translateY(130%);opacity:0;pointer-events:none;transition:.3s}
+.theme-panel.open{transform:translateY(0);opacity:1;pointer-events:auto}
+.theme-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.theme-head strong{font-size:1.05rem}
+.close-theme{border:0;background:transparent;font-size:24px;color:#173d60}
+.swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.swatch{border:0;border-radius:16px;padding:11px 5px;min-height:64px;color:#fff;font-size:.72rem;font-weight:900;box-shadow:inset 3px 3px 6px rgba(255,255,255,.3),inset -3px -3px 6px rgba(0,0,0,.2),4px 5px 9px rgba(0,0,0,.15)}
+.reset{margin-top:12px;width:100%;border:0;border-radius:16px;padding:12px;background:#fff;color:#173d60;font-weight:900}
+.overlay{position:fixed;inset:0;background:rgba(1,9,25,.42);backdrop-filter:blur(3px);z-index:19;opacity:0;pointer-events:none;transition:.25s}.overlay.open{opacity:1;pointer-events:auto}
+.small{font-size:.78rem;color:#4c7690}
+@media(min-width:700px){
+  .shell{padding-top:28px}.grid.two{grid-template-columns:1fr 1fr}.actions{grid-template-columns:1fr 1fr}.cert-actions{grid-template-columns:1fr 1fr}.card{padding:30px}.hero{padding:46px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="bg-orb one"></div><div class="bg-orb two"></div><div class="bg-orb three"></div>
+<div class="overlay" id="overlay"></div>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="brand"><div class="brand-mark"><span>NSS</span></div><div>NATIONAL SERVICE SCHEME</div></div>
+    <button class="theme-btn" id="themeBtn" type="button">🎨 CHANGE BACKGROUND</button>
+  </div>
+
+  <main id="app"></main>
+  <div class="footer">NSS Certificate Portal • Digital Participation Certificate</div>
+</div>
+
+<div class="theme-panel" id="themePanel" aria-hidden="true">
+  <div class="theme-head"><strong>Choose Background</strong><button class="close-theme" id="closeTheme" type="button" aria-label="Close">×</button></div>
+  <div class="swatches">
+    <button class="swatch" data-theme="navy" style="background:linear-gradient(145deg,#061632,#0b2c59)">Deep Navy</button>
+    <button class="swatch" data-theme="ocean" style="background:linear-gradient(145deg,#064b72,#1298bd)">Ocean Blue</button>
+    <button class="swatch" data-theme="sky" style="background:linear-gradient(145deg,#1673b8,#68cfff)">Sky Blue</button>
+    <button class="swatch" data-theme="purple" style="background:linear-gradient(145deg,#25184e,#684d9f)">Soft Purple</button>
+    <button class="swatch" data-theme="midnight" style="background:linear-gradient(145deg,#030711,#17253f)">Midnight</button>
+    <button class="swatch" data-theme="pink" style="background:linear-gradient(145deg,#5a173d,#bb4e78)">Soft Pink</button>
+    <button class="swatch" data-theme="teal" style="background:linear-gradient(145deg,#063d43,#168b88)">Teal</button>
+    <button class="swatch" data-theme="blue" style="background:linear-gradient(145deg,#092b63,#1769ad)">Dark Blue</button>
+  </div>
+  <button class="reset" id="resetTheme" type="button">RESET BACKGROUND</button>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const APPROVED = [
+    ["hiya","Hiya"],["jiya","Jiya"],["riya","Riya"],["maya","Maya"],["jaya","Jaya"],
+    ["laya","Laya"],["janana","Janana"],["banana","Banana"],["leafoya","Leafoya"],
+    ["kijiyalaga","Kijiyalaga"],["miyaliyta","Miyaliyta"]
+  ];
+  const KEY = {
+    device:"nss_certificate_device_id",
+    auth:"nss_certificate_auth",
+    state:"nss_certificate_generation_status",
+    data:"nss_certificate_data",
+    time:"nss_certificate_timestamp",
+    bg:"nss_certificate_background",
+    processing:"nss_certificate_processing"
+  };
+  const themes = {
+    navy:["#061632","#0b2c59"], ocean:["#064b72","#1298bd"], sky:["#1673b8","#68cfff"],
+    purple:["#25184e","#684d9f"], midnight:["#030711","#17253f"], pink:["#5a173d","#bb4e78"],
+    teal:["#063d43","#168b88"], blue:["#092b63","#1769ad"]
+  };
+  const messages = [
+    "Checking registered NSS name…","Verifying student information…","Confirming certificate eligibility…",
+    "Preparing NSS certificate…","Entering your verified name…","Applying certificate details…",
+    "Checking certificate quality…","Preparing final preview…","Almost ready…"
+  ];
+
+  const app = document.getElementById("app");
+  const themePanel = document.getElementById("themePanel");
+  const overlay = document.getElementById("overlay");
+
+  function esc(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+  function getJSON(k, fallback=null){try{return JSON.parse(localStorage.getItem(k)) ?? fallback}catch{return fallback}}
+  function setJSON(k,v){localStorage.setItem(k,JSON.stringify(v))}
+  function uid(){
+    let id=localStorage.getItem(KEY.device);
+    if(!id){id=(crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random());localStorage.setItem(KEY.device,id)}
+    return id;
+  }
+  uid();
+
+  function applyTheme(name){
+    const t=themes[name]||themes.navy;
+    document.documentElement.style.setProperty("--bg1",t[0]);
+    document.documentElement.style.setProperty("--bg2",t[1]);
+    localStorage.setItem(KEY.bg,name);
+  }
+  applyTheme(localStorage.getItem(KEY.bg)||"navy");
+
+  document.getElementById("themeBtn").onclick=()=>{themePanel.classList.add("open");overlay.classList.add("open");themePanel.setAttribute("aria-hidden","false")};
+  function closeThemes(){themePanel.classList.remove("open");overlay.classList.remove("open");themePanel.setAttribute("aria-hidden","true")}
+  document.getElementById("closeTheme").onclick=closeThemes;
+  overlay.onclick=closeThemes;
+  document.getElementById("resetTheme").onclick=()=>{applyTheme("navy");closeThemes()};
+  document.querySelectorAll(".swatch").forEach(b=>b.onclick=()=>{applyTheme(b.dataset.theme);closeThemes()});
+
+  let auth = getJSON(KEY.auth);
+  let cert = getJSON(KEY.data);
+  let processing = getJSON(KEY.processing);
+
+  function findOfficial(input){
+    const n=input.trim().toLowerCase();
+    const hit=APPROVED.find(x=>x[0]===n);
+    return hit ? hit[1] : null;
+  }
+
+  function renderWelcome(){
+    app.innerHTML = `
+      <section class="card hero">
+        <div class="welcome-icon">🎓</div>
+        <div class="eyebrow">National Service Scheme</div>
+        <h1>NSS CERTIFICATE PORTAL</h1>
+        <div class="subtitle">Digital Participation Certificate</div>
+        <p class="portal-note">Enter your registered NSS name to access your certificate.</p>
+        <label class="field-label" for="name">Enter your registered name</label>
+        <input class="input" id="name" autocomplete="name" placeholder="Type your registered name">
+        <div class="robot" id="robot" role="button" tabindex="0" aria-checked="false">
+          <div class="robot-box" id="robotBox">✓</div>
+          <div><div class="robot-title">I'm not a robot</div><div class="robot-sub">Tap to complete verification</div></div>
+        </div>
+        <div class="actions">
+          <button class="primary" id="verify" type="button">VERIFY &amp; CONTINUE</button>
+        </div>
+        <div id="welcomeMsg"></div>
+      </section>`;
+    let verified=false;
+    const robot=document.getElementById("robot"), box=document.getElementById("robotBox");
+    const toggle=()=>{verified=!verified;robot.classList.toggle("checked",verified);robot.setAttribute("aria-checked",String(verified))};
+    robot.onclick=toggle;robot.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle()}};
+    document.getElementById("verify").onclick=()=>{
+      const msg=document.getElementById("welcomeMsg"), name=document.getElementById("name").value;
+      if(!name.trim()){msg.innerHTML=`<div class="status error"><span>⚠️</span><div><strong>Name Required</strong>Please enter your registered NSS name.</div></div>`;return}
+      if(!verified){msg.innerHTML=`<div class="status error"><span>⚠️</span><div><strong>Verification Required</strong>Please complete the verification first.</div></div>`;return}
+      const official=findOfficial(name);
+      if(!official){msg.innerHTML=`<div class="status error"><span>✕</span><div><strong>Access Denied</strong>This name is not registered for the NSS Certificate Portal.<br><button class="secondary" style="margin-top:10px;padding:10px 14px" id="tryAgain">TRY AGAIN</button></div></div>`;document.getElementById("tryAgain").onclick=()=>{document.getElementById("name").value="";msg.innerHTML=""};return}
+      auth={verifiedName:official,normalizedName:official.toLowerCase(),verifiedAt:new Date().toISOString()};
+      setJSON(KEY.auth,auth);
+      showVerified();
+    };
+  }
+
+  function showVerified(){
+    const name=auth.verifiedName;
+    app.innerHTML=`<section class="card center">
+      <div class="welcome-icon">✓</div>
+      <div class="status success" style="justify-content:center">✓ Name Verified Successfully</div>
+      <p class="small">Welcome</p>
+      <div class="verified-name">${esc(name)}</div>
+      <button class="primary" id="continueBtn" type="button">CONTINUE</button>
+    </section>`;
+    document.getElementById("continueBtn").onclick=showDetails;
+  }
+
+  function showDetails(){
+    const saved=getJSON(KEY.data);
+    if(saved && saved.verifiedName===auth.verifiedName){cert=saved;showReady();return}
+    app.innerHTML=`<section class="card">
+      <div class="eyebrow">Student Details</div>
+      <h2 style="margin:7px 0 3px;font-size:1.8rem">Complete your certificate details</h2>
+      <p class="small">Your verified name is fixed for this certificate.</p>
+      <div class="section">
+        <label class="field-label">Verified Name</label>
+        <div class="input" aria-readonly="true">${esc(auth.verifiedName)}</div>
+      </div>
+      <div class="section">
+        <label class="field-label" for="age">Enter your age</label>
+        <input class="input" id="age" type="number" inputmode="numeric" min="10" max="100" placeholder="Enter your age">
+        <div id="ageMsg"></div>
+      </div>
+      <div class="section">
+        <label class="field-label">Designation</label>
+        <div class="grid two">
+          <button class="choice" data-value="NSS Volunteer" type="button"><span class="tick">✓</span><div class="choice-title">NSS Volunteer</div><div class="choice-desc">Volunteer participation</div></button>
+          <button class="choice" data-value="NSS Member" type="button"><span class="tick">✓</span><div class="choice-title">NSS Member</div><div class="choice-desc">NSS membership</div></button>
+        </div>
+      </div>
+      <div class="actions"><button class="primary" id="preview" type="button">PREVIEW CERTIFICATE</button></div>
+      <div id="detailMsg"></div>
+    </section>`;
+    let designation="";
+    document.querySelectorAll(".choice").forEach(c=>c.onclick=()=>{
+      designation=c.dataset.value;
+      document.querySelectorAll(".choice").forEach(x=>x.classList.toggle("selected",x===c));
+    });
+    document.getElementById("preview").onclick=()=>{
+      const age=Number(document.getElementById("age").value), ageMsg=document.getElementById("ageMsg"), detailMsg=document.getElementById("detailMsg");
+      ageMsg.innerHTML="";detailMsg.innerHTML="";
+      if(!Number.isInteger(age)){ageMsg.innerHTML=`<div class="status error">⚠️ <div><strong>Age Required</strong>Please enter your age.</div></div>`;return}
+      if(age<10||age>100){ageMsg.innerHTML=`<div class="status error">⚠️ <div><strong>Invalid Age</strong>Please enter a valid age.</div></div>`;return}
+      if(!designation){detailMsg.innerHTML=`<div class="status error">⚠️ <div><strong>Designation Required</strong>Please select NSS Volunteer or NSS Member.</div></div>`;return}
+      startGeneration({age,designation});
+    };
+  }
+
+  function showProcessing(){
+    app.innerHTML=`<section class="card processing">
+      <div class="eyebrow">Certificate Preparation</div>
+      <h2 style="margin:7px 0 0;font-size:1.8rem;color:#082452">CERTIFICATE PROCESSING</h2>
+      <div class="scene" aria-label="Animated certificate preparation">
+        <div class="cloud"></div><div class="cloud c2"></div>
+        <div class="destination">✓ CERTIFICATE READY</div><div class="path"></div>
+        <div class="runner" id="runner"><div class="head"></div><div class="body"></div><div class="arm"></div><div class="arm a2"></div><div class="leg"></div><div class="leg l2"></div></div>
+      </div>
+      <div class="process-msg" id="processMsg">Preparing your NSS certificate…</div>
+      <div class="progress-wrap"><div class="progress" id="progress"></div></div>
+      <div class="progress-label" id="progressLabel">0% complete</div>
+    </section>`;
+  }
+
+  function startGeneration(details){
+    if(getJSON(KEY.data)) {cert=getJSON(KEY.data);showReady();return}
+    if(getJSON(KEY.processing)){resumeProcessing();return}
+    const p={startedAt:Date.now(),details,verifiedName:auth.verifiedName};
+    setJSON(KEY.processing,p);
+    localStorage.setItem(KEY.state,"processing");
+    resumeProcessing();
+  }
+
+  function resumeProcessing(){
+    processing=getJSON(KEY.processing);
+    if(!processing || !auth){renderWelcome();return}
+    showProcessing();
+    const duration=30000;
+    const tick=()=>{
+      const elapsed=Math.max(0,Date.now()-processing.startedAt);
+      const pct=Math.min(100,elapsed/duration*100);
+      const p=document.getElementById("progress"), label=document.getElementById("progressLabel"), msg=document.getElementById("processMsg");
+      if(!p){return}
+      p.style.width=pct+"%";
+      label.textContent=Math.round(pct)+"% complete";
+      const idx=Math.min(messages.length-1,Math.floor(pct/100*messages.length));
+      msg.textContent=messages[idx];
+      if(pct>=100){finishGeneration();return}
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  function finishGeneration(){
+    processing=getJSON(KEY.processing);
+    if(!processing || !auth)return;
+    const details=processing.details;
+    const result={verifiedName:auth.verifiedName,normalizedName:auth.normalizedName,age:details.age,designation:details.designation,generated:true,generatedAt:new Date().toISOString()};
+    cert=result;
+    setJSON(KEY.data,result);
+    localStorage.setItem(KEY.state,"generated");
+    localStorage.setItem(KEY.time,result.generatedAt);
+    localStorage.removeItem(KEY.processing);
+    showReady(true);
+  }
+
+  function showReady(newly=false){
+    const data=getJSON(KEY.data);
+    if(!data || !auth || data.verifiedName!==auth.verifiedName){showDetails();return}
+    cert=data;
+    app.innerHTML=`<section class="card">
+      <div class="status success"><span>✓</span><div><strong>✓ Your Certificate Is Ready</strong>Your previously generated certificate is available below.</div></div>
+      <div class="actions" style="margin-bottom:15px"><button class="primary" id="viewCert" type="button">VIEW MY CERTIFICATE</button><button class="secondary" id="downloadTop" type="button">DOWNLOAD CERTIFICATE</button></div>
+      <div id="certificateArea" class="cert-wrap">
+        <canvas id="certificateCanvas" class="cert-img" aria-label="Personalized NSS certificate"></canvas>
+        <div class="cert-actions"><button class="primary" id="downloadBtn" type="button">DOWNLOAD CERTIFICATE</button><button class="secondary" id="fullscreenBtn" type="button">FULL-SCREEN PREVIEW</button></div>
+      </div>
+    </section>`;
+    const canvas=document.getElementById("certificateCanvas");
+    drawCertificate(canvas,data.verifiedName).then(()=>{
+      document.getElementById("downloadTop").onclick=downloadCertificate;
+      document.getElementById("downloadBtn").onclick=downloadCertificate;
+      document.getElementById("viewCert").onclick=()=>document.getElementById("certificateArea").scrollIntoView({behavior:"smooth",block:"center"});
+      document.getElementById("fullscreenBtn").onclick=()=>{if(canvas.requestFullscreen)canvas.requestFullscreen()};
+      if(newly){document.getElementById("certificateArea").scrollIntoView({behavior:"smooth",block:"center"})}
+    });
+  }
+
+  async function drawCertificate(canvas,name){
+    const img=new Image();
+    img.src="assets/certificate-template.png";
+    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject});
+    const scale=2, w=img.naturalWidth*scale, h=img.naturalHeight*scale;
+    canvas.width=w;canvas.height=h;
+    const ctx=canvas.getContext("2d");
+    ctx.drawImage(img,0,0,w,h);
+    // The supplied template has a dedicated blank name area between
+    // "This is to certify that" and the participation line.
+    const fontSize=48*scale;
+    ctx.font=`700 ${fontSize}px Georgia, "Times New Roman", serif`;
+    ctx.fillStyle="#0a2550";
+    ctx.textAlign="center";ctx.textBaseline="middle";
+    ctx.fillText(name,w/2,344*scale);
+  }
+
+  async function downloadCertificate(){
+    const canvas=document.getElementById("certificateCanvas");
+    if(!canvas)return;
+    const a=document.createElement("a");
+    a.download=`NSS-Certificate-${auth.verifiedName.replace(/\s+/g,"-")}.png`;
+    a.href=canvas.toDataURL("image/png");
+    a.click();
+  }
+
+  function boot(){
+    const saved=getJSON(KEY.data);
+    const p=getJSON(KEY.processing);
+    if(auth && saved && saved.verifiedName===auth.verifiedName){cert=saved;showReady();return}
+    if(auth && p && p.verifiedName===auth.verifiedName){resumeProcessing();return}
+    if(auth){showVerified();return}
+    renderWelcome();
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
