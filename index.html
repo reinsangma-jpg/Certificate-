@@ -1,0 +1,659 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071a3b">
+<meta name="description" content="NSS Certificate Portal">
+<title>NSS Certificate Portal</title>
+<style>
+:root{
+  --bg1:#071a3b; --bg2:#123e78; --card:#a9dfff; --card2:#d9f3ff;
+  --text:#fff; --ink:#09234c; --muted:#d5e8ff; --pink:#ff5e9c; --pink2:#ff8bb8;
+  --cyan:#56d8ff; --shadow:0 18px 45px rgba(0,0,0,.28), inset 1px 1px 0 rgba(255,255,255,.42), inset -2px -2px 0 rgba(0,0,0,.08);
+  --soft-shadow:0 12px 28px rgba(0,0,0,.20), inset 1px 1px 0 rgba(255,255,255,.48), inset -2px -2px 0 rgba(0,0,0,.07);
+  --radius:28px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; min-height:100vh; color:var(--text);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(86,216,255,.20), transparent 28%),
+    radial-gradient(circle at 90% 20%, rgba(255,94,156,.13), transparent 26%),
+    linear-gradient(145deg,var(--bg1),var(--bg2));
+  transition:background .5s ease;
+  overflow-x:hidden;
+}
+body:before,body:after{
+  content:"";position:fixed;z-index:-1;border-radius:50%;filter:blur(2px);pointer-events:none;
+  opacity:.35;animation:float 11s ease-in-out infinite alternate;
+}
+body:before{width:180px;height:180px;left:-80px;top:22%;background:rgba(112,207,255,.22)}
+body:after{width:240px;height:240px;right:-100px;bottom:8%;background:rgba(255,122,178,.16);animation-delay:-4s}
+@keyframes float{to{transform:translate3d(20px,-18px,0) scale(1.05)}}
+button,input{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed}
+.app{width:min(100%,980px);margin:0 auto;padding:18px 14px 42px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-mark{
+  width:46px;height:46px;border-radius:16px;display:grid;place-items:center;
+  background:linear-gradient(145deg,#dff7ff,#8bcff4);box-shadow:var(--soft-shadow);color:var(--ink);font-size:23px
+}
+.brand small{display:block;color:#bfe7ff;letter-spacing:.12em;font-weight:800;font-size:10px}
+.brand strong{display:block;font-size:14px;letter-spacing:.04em}
+.bg-btn{
+  border:0;color:var(--ink);background:linear-gradient(145deg,#dff7ff,#91d6f8);
+  border-radius:18px;padding:11px 13px;box-shadow:var(--soft-shadow);font-weight:900;font-size:11px
+}
+.bg-btn:active,.clay-btn:active,.choice:active{transform:translateY(2px);box-shadow:0 7px 16px rgba(0,0,0,.18),inset 1px 1px 0 rgba(255,255,255,.38)}
+.screen{display:none;animation:enter .45s ease both}
+.screen.active{display:block}
+@keyframes enter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero{text-align:center;padding:24px 8px 16px}
+.eyebrow{font-size:12px;letter-spacing:.22em;font-weight:900;color:#aee7ff}
+h1{margin:7px 0 4px;font-size:clamp(30px,8vw,58px);line-height:1.02;letter-spacing:-.04em}
+.hero p{margin:10px auto 0;max-width:620px;color:var(--muted);font-size:14px;line-height:1.55}
+.clay-card{
+  background:linear-gradient(145deg,var(--card2),var(--card));
+  color:var(--ink);border-radius:var(--radius);padding:20px;
+  box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.30)
+}
+.field-label{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;margin:2px 4px 9px}
+.input{
+  width:100%;border:0;outline:0;border-radius:21px;padding:17px 18px;background:#f4fbff;color:#08244b;
+  box-shadow:inset 5px 5px 12px rgba(24,80,120,.10),inset -5px -5px 12px rgba(255,255,255,.9);
+  font-size:17px;font-weight:700;transition:.2s
+}
+.input:focus{box-shadow:inset 4px 4px 10px rgba(24,80,120,.10),0 0 0 3px rgba(255,94,156,.52),inset -5px -5px 12px #fff}
+.robot{
+  margin-top:14px;display:flex;align-items:center;gap:13px;padding:14px;border-radius:21px;
+  background:rgba(255,255,255,.52);box-shadow:inset 4px 4px 10px rgba(20,70,110,.10),inset -4px -4px 10px rgba(255,255,255,.9);
+  user-select:none;touch-action:manipulation;transition:.25s
+}
+.robot.checked{background:linear-gradient(145deg,#ffd7e7,#ffb3cf);box-shadow:0 10px 22px rgba(255,94,156,.20),inset 2px 2px 0 rgba(255,255,255,.55)}
+.check{
+  width:31px;height:31px;min-width:31px;border-radius:10px;display:grid;place-items:center;
+  border:2px solid #7d9bb5;background:#f7fcff;color:transparent;font-weight:1000;font-size:20px;
+  box-shadow:inset 2px 2px 5px rgba(0,0,0,.10);transition:.2s
+}
+.robot.checked .check{background:var(--pink);border-color:var(--pink);color:#fff;animation:pop .3s ease}
+@keyframes pop{0%{transform:scale(.7)}70%{transform:scale(1.13)}100%{transform:scale(1)}}
+.robot span{font-weight:900;color:#123255}
+.status{min-height:22px;margin:9px 3px 0;font-size:13px;font-weight:800}
+.status.error{color:#b01754}.status.good{color:#11704d}
+.clay-btn{
+  width:100%;border:0;border-radius:22px;padding:16px 18px;margin-top:15px;
+  color:#fff;background:linear-gradient(145deg,#ff78ac,#ed3f84);font-weight:950;letter-spacing:.05em;
+  box-shadow:0 14px 25px rgba(190,29,95,.26),inset 2px 2px 0 rgba(255,255,255,.30),inset -2px -2px 0 rgba(0,0,0,.10);
+  transition:.18s
+}
+.clay-btn:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.clay-btn.secondary{color:var(--ink);background:linear-gradient(145deg,#e7f8ff,#9bdcff);box-shadow:var(--soft-shadow)}
+.clay-btn.ghost{color:var(--ink);background:rgba(255,255,255,.55);box-shadow:var(--soft-shadow)}
+.clay-btn:disabled{opacity:.5;filter:grayscale(.15);transform:none}
+.notice{margin-top:15px;padding:15px 16px;border-radius:20px;background:rgba(255,255,255,.42);color:var(--ink);font-size:13px;line-height:1.5}
+.success-card,.error-card{text-align:center;padding:26px}
+.big-check{width:68px;height:68px;border-radius:23px;margin:0 auto 12px;display:grid;place-items:center;background:#c9f8df;color:#13875b;font-size:35px;box-shadow:var(--soft-shadow)}
+.error-card .big-check{background:#ffd4e4;color:#b01754}
+.card-title{font-size:25px;font-weight:950;margin:3px 0 6px}.card-copy{font-size:14px;line-height:1.55;color:#38506b;margin:0}
+.readonly{
+  padding:16px 17px;border-radius:20px;background:rgba(255,255,255,.54);box-shadow:inset 4px 4px 10px rgba(20,70,110,.08),inset -4px -4px 10px rgba(255,255,255,.8);
+  font-weight:950;font-size:17px
+}
+.grid{display:grid;grid-template-columns:1fr;gap:14px}
+.section-title{font-size:25px;font-weight:950;margin:0 0 5px}.section-copy{margin:0 0 18px;color:#42607b;font-size:13px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px}.class-choices{grid-template-columns:1fr 1fr}
+.choice{
+  border:0;text-align:left;padding:17px;border-radius:22px;background:linear-gradient(145deg,#dff7ff,#9fdaf6);
+  color:var(--ink);box-shadow:var(--soft-shadow);min-height:110px;transition:.2s;position:relative
+}
+.choice strong{display:block;font-size:15px}.choice small{display:block;margin-top:7px;color:#4b6781;line-height:1.35}
+.choice .mini-check{position:absolute;right:12px;top:12px;width:25px;height:25px;border-radius:9px;background:#fff;color:transparent;display:grid;place-items:center;font-weight:1000}
+.choice.selected{transform:translateY(-3px);background:linear-gradient(145deg,#ffd7e7,#ffabc9);box-shadow:0 16px 28px rgba(255,94,156,.20),inset 2px 2px 0 rgba(255,255,255,.5)}
+.choice.selected .mini-check{background:var(--pink);color:#fff}.choice.disabled-choice{opacity:.42;filter:saturate(.5);pointer-events:none}
+.inline-message{min-height:22px;margin-top:10px;font-size:13px;font-weight:900}
+.processing-wrap{text-align:center}
+.processing-head{margin-bottom:12px}
+.processing-head h2{margin:0;font-size:28px}.processing-head p{margin:6px 0 0;color:#cceaff;font-size:13px}
+.scene{
+  position:relative;height:260px;overflow:hidden;border-radius:28px;
+  background:linear-gradient(#c9f0ff 0%,#e9f9ff 60%,#bce4c0 60%,#8cc98d 100%);
+  box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.3)
+}
+.sun{position:absolute;right:11%;top:12%;width:54px;height:54px;border-radius:50%;background:#ffe99b;box-shadow:0 0 0 12px rgba(255,233,155,.15)}
+.cloud{position:absolute;width:90px;height:25px;border-radius:30px;background:rgba(255,255,255,.72);top:22%}
+.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}.cloud:before{width:38px;height:38px;left:17px;top:-19px}.cloud:after{width:50px;height:50px;left:42px;top:-27px}
+.cloud.one{left:8%}.cloud.two{left:54%;top:15%;transform:scale(.7)}
+.path{position:absolute;left:0;right:0;bottom:0;height:76px;background:linear-gradient(180deg,#d7c08d,#b7955f);clip-path:polygon(0 52%,100% 0,100% 100%,0 100%);opacity:.72}
+.finish{position:absolute;right:7%;bottom:66px;text-align:center;color:#08244b;font-weight:1000;font-size:10px;letter-spacing:.08em}
+.finish .flag{width:38px;height:45px;border-left:4px solid #173f70;margin:auto;position:relative}.finish .flag:after{content:"";position:absolute;left:1px;top:2px;border:15px solid transparent;border-left:0;border-right:23px solid #ff5e9c}
+.runner{
+  position:absolute;left:0;bottom:47px;width:70px;height:105px;transform:translateX(0);
+  transition:transform .35s linear;will-change:transform
+}
+.runner svg{width:100%;height:100%;overflow:visible}
+.run-leg{transform-origin:13px 70px;animation:leg .35s linear infinite alternate}.run-leg.two{transform-origin:13px 70px;animation-delay:-.175s}
+.run-arm{transform-origin:25px 44px;animation:arm .35s linear infinite alternate}.run-arm.two{animation-delay:-.175s}
+@keyframes leg{to{transform:rotate(25deg)}}@keyframes arm{to{transform:rotate(-25deg)}}
+.runner.paused .run-leg,.runner.paused .run-arm{animation-play-state:paused}
+.progress-box{margin-top:14px}
+.progress-track{height:15px;border-radius:99px;background:rgba(255,255,255,.25);box-shadow:inset 4px 4px 9px rgba(0,0,0,.12),inset -3px -3px 7px rgba(255,255,255,.22);overflow:hidden}
+.progress-fill{height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,#ff5e9c,#ff9cc2,#67ddff);transition:width .35s linear}
+.progress-row{display:flex;justify-content:space-between;gap:10px;margin-top:8px;font-size:12px;font-weight:900}.progress-row span:last-child{color:#bdeaff}
+.processing-message{min-height:42px;margin-top:10px;font-weight:900;color:#fff}
+.certificate-shell{padding:12px;background:rgba(255,255,255,.28);border-radius:28px;box-shadow:var(--soft-shadow)}
+.certificate-image{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:contain;border-radius:14px;background:#fff;box-shadow:0 12px 30px rgba(0,0,0,.20)}
+.preview-actions{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+.footer{text-align:center;color:#a9d8f7;font-size:11px;margin-top:22px}
+.palette{
+  position:fixed;inset:0;background:rgba(0,13,35,.55);backdrop-filter:blur(8px);
+  display:none;align-items:flex-end;justify-content:center;z-index:20;padding:14px
+}
+.palette.open{display:flex}
+.palette-card{width:min(100%,560px);background:linear-gradient(145deg,#dff7ff,#9bd8f6);color:var(--ink);border-radius:30px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.palette-head{display:flex;justify-content:space-between;align-items:center}.palette-head strong{font-size:19px}.close{border:0;width:38px;height:38px;border-radius:13px;background:#fff;color:var(--ink);font-weight:1000}
+.themes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px}
+.theme{border:0;padding:13px;border-radius:18px;text-align:left;background:#fff;color:var(--ink);font-weight:900;box-shadow:var(--soft-shadow);position:relative;overflow:hidden}
+.theme:before{content:"";display:block;height:34px;border-radius:12px;margin-bottom:9px;background:var(--swatch)}
+.theme.active{outline:3px solid var(--pink)}
+.reset-bg{margin-top:10px}
+.hidden{display:none!important}
+@media(min-width:700px){
+  .app{padding:28px 20px 50px}
+  .hero{padding-top:42px}
+  .grid{grid-template-columns:1.1fr .9fr}
+  .preview-actions{grid-template-columns:1fr 1fr}
+  .palette{align-items:center}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">NSS</div>
+      <div><small>NATIONAL SERVICE SCHEME</small><strong>Certificate Portal</strong></div>
+    </div>
+    <button class="bg-btn" id="bgOpen">🎨 CHANGE BACKGROUND</button>
+  </header>
+
+  <main>
+    <section class="screen active" id="welcomeScreen">
+      <div class="hero">
+        <div class="eyebrow">NATIONAL SERVICE SCHEME</div>
+        <h1>NSS CERTIFICATE PORTAL</h1>
+        <p>Digital Participation Certificate</p>
+        <p>Enter your registered NSS name to access your certificate.</p>
+      </div>
+      <div class="clay-card">
+        <label class="field-label" for="nameInput">Registered Name</label>
+        <input class="input" id="nameInput" autocomplete="name" placeholder="Enter your registered name" maxlength="80">
+        <div class="robot" id="robotCard" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="check" id="robotCheck">✓</div>
+          <span>I'm not a robot</span>
+        </div>
+        <div class="status" id="welcomeStatus" aria-live="polite"></div>
+        <button class="clay-btn" id="verifyBtn">VERIFY &amp; CONTINUE</button>
+      </div>
+    </section>
+
+    <section class="screen" id="verifiedScreen">
+      <div class="clay-card success-card">
+        <div class="big-check">✓</div>
+        <div class="card-title">Name Verified Successfully</div>
+        <p class="card-copy" id="welcomeOfficial">Welcome, verified NSS member.</p>
+        <button class="clay-btn" id="continueBtn">CONTINUE</button>
+      </div>
+    </section>
+
+    <section class="screen" id="detailsScreen">
+      <div class="clay-card">
+        <div class="section-title">Student Details</div>
+        <p class="section-copy">Your verified identity is fixed for this certificate session.</p>
+        <div class="field-label">Verified Name</div>
+        <div class="readonly" id="officialName"></div>
+
+        <div style="height:14px"></div>
+        <label class="field-label" for="ageInput">Age</label>
+        <input class="input" id="ageInput" inputmode="numeric" pattern="[0-9]*" type="number" min="15" max="25" step="1" placeholder="Enter your age">
+        <div class="inline-message" id="ageMessage"></div>
+
+        <div style="height:16px"></div>
+        <div class="field-label">Select Class</div>
+        <div class="choices class-choices" id="classChoices">
+          <button class="choice" data-class="B.A 1st Semester"><span class="mini-check">✓</span><strong>B.A 1st Semester</strong><small>Member only</small></button>
+          <button class="choice" data-class="B.A 3rd Semester"><span class="mini-check">✓</span><strong>B.A 3rd Semester</strong><small>Volunteer or Member</small></button>
+          <button class="choice" data-class="B.A 5th Semester"><span class="mini-check">✓</span><strong>B.A 5th Semester</strong><small>Volunteer or Member</small></button>
+          <button class="choice" data-class="H.S."><span class="mini-check">✓</span><strong>H.S.</strong><small>Member only</small></button>
+        </div>
+        <div class="inline-message" id="classMessage"></div>
+
+        <div style="height:12px"></div>
+        <div class="field-label">Designation</div>
+        <div class="choices">
+          <button class="choice" data-designation="NSS Volunteer">
+            <span class="mini-check">✓</span><strong>NSS Volunteer</strong><small>Active volunteer participation</small>
+          </button>
+          <button class="choice" data-designation="NSS Member">
+            <span class="mini-check">✓</span><strong>NSS Member</strong><small>Registered NSS membership</small>
+          </button>
+        </div>
+        <div class="inline-message" id="designationMessage"></div>
+        <button class="clay-btn" id="previewBtn">PREVIEW CERTIFICATE</button>
+      </div>
+    </section>
+
+    <section class="screen" id="processingScreen">
+      <div class="processing-wrap">
+        <div class="processing-head">
+          <h2>CERTIFICATE PROCESSING</h2>
+          <p>Preparing your NSS certificate…</p>
+        </div>
+        <div class="scene" id="scene">
+          <div class="sun"></div><div class="cloud one"></div><div class="cloud two"></div><div class="path"></div>
+          <div class="finish"><div class="flag"></div>CERTIFICATE<br>READY</div>
+          <div class="runner" id="runner">
+            <svg viewBox="0 0 70 105" aria-hidden="true">
+              <circle cx="30" cy="18" r="10" fill="#ffd0ad"/>
+              <path d="M20 16c2-10 19-12 22 0-7-3-14-2-22 0Z" fill="#173f70"/>
+              <path d="M20 30 Q34 25 42 35 L37 61 L20 58Z" fill="#ff5e9c"/>
+              <g class="run-arm"><path d="M23 39 L8 55" stroke="#ffd0ad" stroke-width="7" stroke-linecap="round"/></g>
+              <g class="run-arm two"><path d="M38 39 L53 54" stroke="#ffd0ad" stroke-width="7" stroke-linecap="round"/></g>
+              <g class="run-leg"><path d="M27 59 L16 79 L6 91" stroke="#173f70" stroke-width="8" stroke-linecap="round" fill="none"/></g>
+              <g class="run-leg two"><path d="M34 59 L47 77 L58 87" stroke="#173f70" stroke-width="8" stroke-linecap="round" fill="none"/></g>
+              <path d="M0 94h18" stroke="#ff5e9c" stroke-width="5" stroke-linecap="round"/>
+              <path d="M54 90h15" stroke="#ff5e9c" stroke-width="5" stroke-linecap="round"/>
+            </svg>
+          </div>
+        </div>
+        <div class="progress-box">
+          <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+          <div class="progress-row"><span id="progressLabel">0%</span><span>Preparing safely</span></div>
+          <div class="processing-message" id="processingMessage">Starting certificate preparation…</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="readyScreen">
+      <div class="clay-card">
+        <div class="success-card" style="padding:8px 0 16px">
+          <div class="big-check">✓</div>
+          <div class="card-title">Certificate Ready</div>
+          <p class="card-copy" id="readyCopy">Your certificate is ready below.</p>
+        </div>
+        <div class="certificate-shell">
+          <img class="certificate-image" id="certificateImage" alt="Generated NSS certificate">
+        </div>
+        <div class="preview-actions">
+          <button class="clay-btn secondary" id="viewBtn">VIEW MY CERTIFICATE</button>
+          <button class="clay-btn" id="downloadBtn">DOWNLOAD CERTIFICATE</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="footer">National Service Scheme • Digital Participation Certificate</div>
+</div>
+
+<div class="palette" id="palette" aria-hidden="true">
+  <div class="palette-card">
+    <div class="palette-head"><strong>Choose portal background</strong><button class="close" id="bgClose">×</button></div>
+    <div class="themes">
+      <button class="theme" data-theme="navy" style="--swatch:linear-gradient(135deg,#071a3b,#123e78)">Deep Navy</button>
+      <button class="theme" data-theme="ocean" style="--swatch:linear-gradient(135deg,#063b65,#0ca7d8)">Ocean Blue</button>
+      <button class="theme" data-theme="sky" style="--swatch:linear-gradient(135deg,#2177b8,#8ddcff)">Sky Blue</button>
+      <button class="theme" data-theme="midnight" style="--swatch:linear-gradient(135deg,#090d20,#252b56)">Midnight</button>
+      <button class="theme" data-theme="purple" style="--swatch:linear-gradient(135deg,#33265f,#8b6fd8)">Soft Purple</button>
+      <button class="theme" data-theme="pink" style="--swatch:linear-gradient(135deg,#5b183f,#d96b9c)">Soft Pink</button>
+      <button class="theme" data-theme="teal" style="--swatch:linear-gradient(135deg,#063e42,#1fa89f)">Teal</button>
+      <button class="theme" data-theme="darkblue" style="--swatch:linear-gradient(135deg,#061426,#174c83)">Dark Blue</button>
+    </div>
+    <button class="clay-btn secondary reset-bg" id="resetBg">RESET BACKGROUND</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const AUTH = {
+    "rakeshdewri": "Rakesh Dewri",
+    "trishnahazarika": "Trishna Hazarika",
+    "arpanabordoloi": "Arpana Bordoloi",
+    "reinhardsonsangma": "Reinhardson Sangma"
+  };
+
+  // Smart spelling/format matching: capitalization, spaces, punctuation and
+  // harmless internal spacing are ignored. A small local fuzzy layer tolerates
+  // minor typing slips without requiring an external service.
+  const normalize = value => (value || "").toString().toLowerCase().replace(/[^a-z]/g, "");
+  const levenshtein = (a,b) => {
+    const prev=Array.from({length:b.length+1},(_,i)=>i);
+    for(let i=1;i<=a.length;i++){
+      const cur=[i];
+      for(let j=1;j<=b.length;j++) cur[j]=Math.min(cur[j-1]+1,prev[j]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));
+      for(let j=0;j<cur.length;j++) prev[j]=cur[j];
+    }
+    return prev[b.length];
+  };
+  function resolveOfficialName(value){
+    const n=normalize(value); if(!n) return null;
+    if(AUTH[n]) return AUTH[n];
+    let best=null,bestDistance=99;
+    for(const key of Object.keys(AUTH)){
+      const d=levenshtein(n,key);
+      const maxAllowed=key.length>=16?3:2;
+      const similarity=1-d/Math.max(n.length,key.length);
+      if(d<=maxAllowed && similarity>=0.84 && d<bestDistance){best=AUTH[key];bestDistance=d;}
+    }
+    return best;
+  }
+  const keys = {
+    state: "nss_certificate_auth",
+    status: "nss_certificate_generation_status",
+    data: "nss_certificate_data",
+    background: "nss_certificate_background",
+    processingStarted: "nss_certificate_processing_started_at"
+  };
+
+  const $ = id => document.getElementById(id);
+  const screens = [...document.querySelectorAll(".screen")];
+  let verifiedName = null;
+  let robotVerified = false;
+  let designation = null;
+  let selectedClass = null;
+  let processing = false;
+  let processingTimer = null;
+
+  function show(id) {
+    screens.forEach(s => s.classList.remove("active"));
+    $(id).classList.add("active");
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function setStatus(text="", type="") {
+    const el = $("welcomeStatus");
+    el.textContent = text;
+    el.className = "status " + type;
+  }
+
+  function setRobot(checked) {
+    robotVerified = !!checked;
+    const card = $("robotCard");
+    card.classList.toggle("checked", robotVerified);
+    card.setAttribute("aria-checked", String(robotVerified));
+  }
+
+  $("robotCard").addEventListener("click", () => setRobot(!robotVerified));
+  $("robotCard").addEventListener("keydown", e => {
+    if (e.key === " " || e.key === "Enter") { e.preventDefault(); setRobot(!robotVerified); }
+  });
+
+  $("verifyBtn").addEventListener("click", () => {
+    const entered = $("nameInput").value;
+    if (!normalize(entered)) { setStatus("Please enter your registered NSS name.","error"); $("nameInput").focus(); return; }
+    if (!robotVerified) { setStatus("Verification Required — please complete the verification first.","error"); return; }
+
+    const official = resolveOfficialName(entered);
+    if (!official) {
+      setStatus("Access Denied — This name is not registered for the NSS Certificate Portal.","error");
+      return;
+    }
+
+    // Bind the session to the official spelling immediately after authorization.
+    verifiedName = official;
+    $("nameInput").value = official;
+    $("nameInput").readOnly = true;
+    $("verifyBtn").disabled = true;
+    localStorage.setItem(keys.state, JSON.stringify({
+      verifiedName: official,
+      normalizedName: normalize(official),
+      verifiedAt: new Date().toISOString(),
+      robotVerified: true
+    }));
+
+    $("welcomeOfficial").textContent = "Welcome, " + official;
+    show("verifiedScreen");
+  });
+
+  $("continueBtn").addEventListener("click", () => {
+    $("officialName").textContent = verifiedName;
+    restoreMemberCertificateIfPresent();
+    if ($("readyScreen").classList.contains("active")) return;
+    show("detailsScreen");
+    validateAge();
+  });
+
+  $("ageInput").addEventListener("input", validateAge);
+
+  function getAge() {
+    const raw = $("ageInput").value.trim();
+    if (!/^\d+$/.test(raw)) return null;
+    const n = Number(raw);
+    if (!Number.isInteger(n)) return null;
+    return n;
+  }
+
+  function validateAge() {
+    const raw = $("ageInput").value.trim();
+    const msg = $("ageMessage");
+    if (!raw) { msg.textContent = "Age Required — Please enter your age."; msg.style.color="#b01754"; return false; }
+    if (!/^\d+$/.test(raw)) { msg.textContent = "Age Required — Please enter a whole number."; msg.style.color="#b01754"; return false; }
+    const age = Number(raw);
+    if (age < 15 || age > 25) {
+      msg.textContent = "Age Eligibility Required — Only users between 15 and 25 years of age are eligible.";
+      msg.style.color="#b01754"; return false;
+    }
+    msg.textContent = "✓ Age Verified";
+    msg.style.color="#11704d";
+    return true;
+  }
+
+  const classButtons=[...document.querySelectorAll("[data-class]")];
+  const designationButtons=[...document.querySelectorAll("[data-designation]")];
+  function saveSessionState(){
+    if(!verifiedName) return;
+    localStorage.setItem(keys.state,JSON.stringify({verifiedName,normalizedName:normalize(verifiedName),verifiedAt:new Date().toISOString(),robotVerified,age:$("ageInput").value,selectedClass,designation}));
+  }
+  function updateDesignationAvailability(){
+    const memberOnly=selectedClass==="B.A 1st Semester" || selectedClass==="H.S.";
+    designationButtons.forEach(btn=>{
+      const disabled=memberOnly && btn.dataset.designation==="NSS Volunteer";
+      btn.classList.toggle("disabled-choice",disabled); btn.setAttribute("aria-disabled",String(disabled));
+    });
+    if(memberOnly && designation==="NSS Volunteer"){
+      designation="NSS Member";
+      designationButtons.forEach(x=>x.classList.toggle("selected",x.dataset.designation===designation));
+      $("designationMessage").textContent="✓ NSS Member selected automatically for this class.";
+      $("designationMessage").style.color="#11704d";
+    }
+  }
+  classButtons.forEach(btn=>btn.addEventListener("click",()=>{
+    selectedClass=btn.dataset.class;
+    classButtons.forEach(x=>x.classList.toggle("selected",x===btn));
+    $("classMessage").textContent="✓ "+selectedClass+" selected"; $("classMessage").style.color="#11704d";
+    updateDesignationAvailability(); saveSessionState();
+  }));
+  designationButtons.forEach(btn=>btn.addEventListener("click",()=>{
+    const memberOnly=selectedClass==="B.A 1st Semester" || selectedClass==="H.S.";
+    if(memberOnly && btn.dataset.designation==="NSS Volunteer") return;
+    designation=btn.dataset.designation;
+    designationButtons.forEach(x=>x.classList.toggle("selected",x===btn));
+    $("designationMessage").textContent="✓ "+designation+" selected"; $("designationMessage").style.color="#11704d"; saveSessionState();
+  }));
+  $("ageInput").addEventListener("change",saveSessionState);
+
+  $("previewBtn").addEventListener("click", () => {
+    if (!verifiedName) { show("welcomeScreen"); return; }
+    if (!robotVerified) { $("designationMessage").textContent="Verification Required — Please complete verification first."; $("designationMessage").style.color="#b01754"; return; }
+    if (!validateAge()) return;
+    if (!selectedClass) {
+      $("classMessage").textContent = "Class Required — Please select your class."; $("classMessage").style.color="#b01754"; return;
+    }
+    const memberOnly=selectedClass==="B.A 1st Semester" || selectedClass==="H.S.";
+    if (!designation || (memberOnly && designation!=="NSS Member")) {
+      $("designationMessage").textContent = memberOnly ? "Designation Required — This class is limited to NSS Member." : "Designation Required — Please select NSS Volunteer or NSS Member.";
+      $("designationMessage").style.color="#b01754"; return;
+    }
+    saveSessionState();
+
+    const stored = getMemberRecord();
+    if (stored && stored.generated) {
+      restoreMemberCertificateIfPresent();
+      return;
+    }
+
+    if (localStorage.getItem(keys.status) === "processing") {
+      resumeProcessing();
+      return;
+    }
+
+    startProcessing();
+  });
+
+  // High-resolution certificates are stored in IndexedDB. localStorage keeps
+  // only small metadata, preventing mobile localStorage quota failures.
+  const CERT_DB = "nss_certificate_portal_db_v2";
+  const CERT_STORE = "certificates";
+  let activeCertificateURL = null;
+
+  function openCertificateDB(){
+    return new Promise((resolve,reject)=>{
+      if(!window.indexedDB){reject(new Error("IndexedDB unavailable"));return;}
+      const req=indexedDB.open(CERT_DB,1);
+      req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(CERT_STORE))db.createObjectStore(CERT_STORE);};
+      req.onsuccess=()=>resolve(req.result);
+      req.onerror=()=>reject(req.error||new Error("IndexedDB open failed"));
+    });
+  }
+  function putCertificateBlob(key,blob){
+    return openCertificateDB().then(db=>new Promise((resolve,reject)=>{
+      const tx=db.transaction(CERT_STORE,"readwrite"); tx.objectStore(CERT_STORE).put(blob,key);
+      tx.oncomplete=()=>{db.close();resolve(true)}; tx.onerror=()=>{db.close();reject(tx.error||new Error("Save failed"))};
+    }));
+  }
+  function getCertificateBlob(key){
+    return openCertificateDB().then(db=>new Promise((resolve,reject)=>{
+      const tx=db.transaction(CERT_STORE,"readonly"),req=tx.objectStore(CERT_STORE).get(key);
+      req.onsuccess=()=>{const v=req.result||null;db.close();resolve(v)}; req.onerror=()=>{db.close();reject(req.error||new Error("Read failed"))};
+    }));
+  }
+  function getMemberRecord(){
+    try{const raw=localStorage.getItem(keys.data);if(!raw)return null;const data=JSON.parse(raw);return data&&data.normalizedName===normalize(verifiedName)?data:null}catch{return null}
+  }
+  async function restoreMemberCertificateIfPresent(){
+    const stored=getMemberRecord();
+    if(stored&&stored.generated){
+      try{const blob=await getCertificateBlob(stored.normalizedName);if(blob){restoreReady(stored,blob);return true}}catch{}
+      if(stored.fallbackData){restoreReady(stored,stored.fallbackData);return true}
+    }
+    if(localStorage.getItem(keys.status)==="processing"){resumeProcessing();return true}
+    return false;
+  }
+  function setCertificateImage(source){
+    if(activeCertificateURL){URL.revokeObjectURL(activeCertificateURL);activeCertificateURL=null}
+    if(source instanceof Blob){activeCertificateURL=URL.createObjectURL(source);$("certificateImage").src=activeCertificateURL}
+    else $("certificateImage").src=source||"";
+  }
+  function restoreReady(data,source){
+    verifiedName=data.verifiedName; designation=data.designation||null; selectedClass=data.selectedClass||selectedClass||null;
+    classButtons.forEach(x=>x.classList.toggle("selected",x.dataset.class===selectedClass));
+    designationButtons.forEach(x=>x.classList.toggle("selected",x.dataset.designation===designation));
+    updateDesignationAvailability(); setCertificateImage(source); $("readyCopy").textContent="Your certificate is ready below."; show("readyScreen");
+  }
+  function startProcessing(){
+    if(processing)return;
+    const existing=getMemberRecord();
+    if(existing&&existing.generated){restoreMemberCertificateIfPresent();return}
+    processing=true; $("previewBtn").disabled=true;
+    localStorage.setItem(keys.status,"processing");localStorage.setItem(keys.processingStarted,String(Date.now()));show("processingScreen");runProcessing();
+  }
+  const timeline=[
+    {p:0,t:0,msg:"Starting certificate preparation…"},{p:5,t:2000,msg:"Checking registered NSS name…",pause:1500},
+    {p:20,t:8500,msg:"Verifying student information…",pause:1500},{p:40,t:11500,msg:"Confirming age eligibility…"},
+    {p:60,t:16000,msg:"Applying certificate details…"},{p:80,t:21500,msg:"Preparing final certificate…",pause:1500},
+    {p:95,t:25000,msg:"Checking certificate quality…"},{p:99,t:28500,msg:"Almost ready…",pause:1000},{p:100,t:30000,msg:"✓ Certificate Ready"}
+  ];
+  function progressAt(elapsed){
+    if(elapsed<=0)return 0;if(elapsed>=30000)return 100;
+    for(let i=0;i<timeline.length-1;i++){const a=timeline[i],b=timeline[i+1];if(elapsed>=a.t&&elapsed<=b.t){if(a.pause&&elapsed<a.t+a.pause)return a.p;const start=a.t+(a.pause||0),span=b.t-start;if(elapsed<start)return a.p;return a.p+(b.p-a.p)*Math.max(0,Math.min(1,(elapsed-start)/Math.max(1,span)))}}return 0;
+  }
+  function messageAt(elapsed){let c=timeline[0];for(const s of timeline)if(elapsed>=s.t)c=s;return c.msg}
+  function updateProcessing(elapsed){const p=progressAt(elapsed);$("progressFill").style.width=p.toFixed(1)+"%";$("progressLabel").textContent=Math.floor(p)+"%";$("processingMessage").textContent=messageAt(elapsed);const scene=$("scene"),runner=$("runner"),maxX=Math.max(0,scene.clientWidth-88);runner.style.transform=`translateX(${(maxX*p/100).toFixed(1)}px)`;runner.classList.toggle("paused",[5,20,80,99].some(m=>Math.abs(p-m)<.18))}
+  function runProcessing(){clearInterval(processingTimer);const started=Number(localStorage.getItem(keys.processingStarted))||Date.now();localStorage.setItem(keys.processingStarted,String(started));const tick=()=>{const elapsed=Math.max(0,Date.now()-started);updateProcessing(elapsed);if(elapsed>=30000){clearInterval(processingTimer);processingTimer=null;finishGeneration()}};tick();processingTimer=setInterval(tick,80)}
+  function resumeProcessing(){if(processingTimer)clearInterval(processingTimer);processing=true;$("previewBtn").disabled=true;show("processingScreen");runProcessing()}
+  async function createCertificatePNG(name){
+    const img=new Image();img.decoding="async";
+    const loaded=new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error("Template load failed"))});
+    img.src="assets/certificate-template.png";await loaded;
+    if(!img.naturalWidth)throw new Error("Template is empty");
+    const canvas=document.createElement("canvas");canvas.width=3072;canvas.height=1728;const ctx=canvas.getContext("2d",{alpha:false});if(!ctx)throw new Error("Canvas unavailable");
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    ctx.save();ctx.fillStyle="#0a2351";ctx.textAlign="center";ctx.textBaseline="middle";ctx.font='italic 700 56px Georgia, "Times New Roman", serif';ctx.fillText(name,canvas.width/2,650);ctx.restore();
+    return new Promise((resolve,reject)=>canvas.toBlob(b=>b?resolve(b):reject(new Error("PNG encoding failed")),"image/png"));
+  }
+  async function finishGeneration(){
+    if(!verifiedName||resolveOfficialName(verifiedName)!==verifiedName||!robotVerified||!validateAge()||!selectedClass||!designation){processing=false;localStorage.removeItem(keys.status);localStorage.removeItem(keys.processingStarted);$("previewBtn").disabled=false;show("detailsScreen");return}
+    const existing=getMemberRecord();if(existing&&existing.generated){processing=false;await restoreMemberCertificateIfPresent();return}
+    try{
+      $("processingMessage").textContent="✓ Certificate Ready";
+      const blob=await createCertificatePNG(verifiedName);
+      const meta={verifiedName,normalizedName:normalize(verifiedName),age:getAge(),designation,selectedClass,generated:true,generatedAt:new Date().toISOString()};
+      try{await putCertificateBlob(meta.normalizedName,blob)}catch{
+        const fallback=await new Promise((resolve,reject)=>{const fr=new FileReader();fr.onload=()=>resolve(fr.result);fr.onerror=()=>reject(fr.error);fr.readAsDataURL(blob)});
+        if(String(fallback).length>4500000)throw new Error("Storage full");meta.fallbackData=fallback;
+      }
+      localStorage.setItem(keys.data,JSON.stringify(meta));localStorage.setItem(keys.status,"generated");localStorage.removeItem(keys.processingStarted);processing=false;restoreReady(meta,blob);
+    }catch(err){console.error(err);processing=false;localStorage.removeItem(keys.status);localStorage.removeItem(keys.processingStarted);$("previewBtn").disabled=false;$("processingMessage").textContent="Certificate image preparation failed. Please try Preview Certificate again."}
+  }
+  $("downloadBtn").addEventListener("click",async()=>{const data=getMemberRecord();if(!data||!data.generated)return;try{const blob=await getCertificateBlob(data.normalizedName);if(blob){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`${data.verifiedName.replace(/\s+/g,"_")}_NSS_Certificate.png`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);return}}catch{}if(data.fallbackData){const a=document.createElement("a");a.href=data.fallbackData;a.download=`${data.verifiedName.replace(/\s+/g,"_")}_NSS_Certificate.png`;document.body.appendChild(a);a.click();a.remove()}});
+  $("viewBtn").addEventListener("click",async()=>{const data=getMemberRecord();if(!data||!data.generated)return;try{const blob=await getCertificateBlob(data.normalizedName);if(blob){const url=URL.createObjectURL(blob);window.open(url,"_blank","noopener,noreferrer");setTimeout(()=>URL.revokeObjectURL(url),60000);return}}catch{}if(data.fallbackData)window.open(data.fallbackData,"_blank","noopener,noreferrer")});
+
+  const themes = {
+    navy:["#071a3b","#123e78"], ocean:["#063b65","#0ca7d8"], sky:["#2177b8","#8ddcff"],
+    midnight:["#090d20","#252b56"], purple:["#33265f","#8b6fd8"], pink:["#5b183f","#d96b9c"],
+    teal:["#063e42","#1fa89f"], darkblue:["#061426","#174c83"]
+  };
+
+  function applyTheme(key, save=true) {
+    const t = themes[key] || themes.navy;
+    document.documentElement.style.setProperty("--bg1",t[0]);
+    document.documentElement.style.setProperty("--bg2",t[1]);
+    document.querySelectorAll(".theme").forEach(x=>x.classList.toggle("active",x.dataset.theme===key));
+    if (save) localStorage.setItem(keys.background,key);
+  }
+  applyTheme(localStorage.getItem(keys.background) || "navy", false);
+
+  $("bgOpen").addEventListener("click",()=>{$("palette").classList.add("open");$("palette").setAttribute("aria-hidden","false")});
+  $("bgClose").addEventListener("click",()=>{$("palette").classList.remove("open");$("palette").setAttribute("aria-hidden","true")});
+  $("palette").addEventListener("click",e=>{if(e.target === $("palette")) $("bgClose").click()});
+  document.querySelectorAll(".theme").forEach(b=>b.addEventListener("click",()=>applyTheme(b.dataset.theme)));
+  $("resetBg").addEventListener("click",()=>applyTheme("navy"));
+
+  // Restore the verified session and any interrupted processing state safely.
+  try {
+    const saved=JSON.parse(localStorage.getItem(keys.state)||"null");
+    if(saved && saved.verifiedName){
+      const official=resolveOfficialName(saved.verifiedName);
+      if(official===saved.verifiedName){
+        verifiedName=official; robotVerified=saved.robotVerified!==false; selectedClass=saved.selectedClass||null; designation=saved.designation||null;
+        $("nameInput").value=official; $("nameInput").readOnly=true; $("verifyBtn").disabled=true; setRobot(robotVerified); $("welcomeOfficial").textContent="Welcome, "+official;
+        if(saved.age) $("ageInput").value=saved.age;
+        classButtons.forEach(x=>x.classList.toggle("selected",x.dataset.class===selectedClass));
+        designationButtons.forEach(x=>x.classList.toggle("selected",x.dataset.designation===designation));
+        updateDesignationAvailability();
+      }
+    }
+  } catch {}
+  if(localStorage.getItem(keys.status)==="processing" && verifiedName && selectedClass && designation && validateAge()) resumeProcessing();
+})();
+</script>
+</body>
+</html>
