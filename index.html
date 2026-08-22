@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Site Under Maintenance</title>
+<style>
+  :root {
+    --bg1: #0f0c29;
+    --bg2: #302b63;
+    --bg3: #24243e;
+    --accent: #7f5af0;
+    --text: #f5f5f7;
+    --muted: #a0a0b2;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: linear-gradient(135deg, var(--bg1), var(--bg2), var(--bg3));
+    background-size: 200% 200%;
+    animation: gradientShift 12s ease infinite;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px;
+    text-align: center;
+  }
+  @keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .card {
+    max-width: 480px;
+    width: 100%;
+  }
+  .code {
+    font-size: clamp(3rem, 18vw, 6rem);
+    font-weight: 800;
+    letter-spacing: -2px;
+    background: linear-gradient(90deg, var(--accent), #2cb67d);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .icon {
+    font-size: clamp(2.5rem, 12vw, 3.5rem);
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  h1 {
+    font-size: clamp(1.25rem, 5vw, 1.75rem);
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  p {
+    color: var(--muted);
+    font-size: clamp(0.95rem, 3.5vw, 1.05rem);
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .bar {
+    width: 100%;
+    max-width: 280px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 0 auto 28px;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 40%;
+    background: linear-gradient(90deg, var(--accent), #2cb67d);
+    border-radius: 999px;
+    animation: loading 1.8s ease-in-out infinite;
+  }
+  @keyframes loading {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(350%); }
+  }
+  .btn {
+    display: inline-block;
+    padding: 12px 28px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .btn:active {
+    transform: scale(0.96);
+  }
+  .footer-note {
+    margin-top: 24px;
+    font-size: 0.8rem;
+    color: var(--muted);
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon">🛠️</div>
+    <div class="code">404</div>
+    <h1>Site Under Maintenance</h1>
+    <p>We're currently making some improvements behind the scenes.<br>Please check back shortly — we'll be up and running again soon.</p>
+    <div class="bar"><div class="bar-fill"></div></div>
+    <a class="btn" href="/">Try Again</a>
+    <div class="footer-note">Thanks for your patience.</div>
+  </div>
+</body>
+</html>
