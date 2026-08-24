@@ -1,0 +1,6 @@
+window.APP_CONFIG = {
+  SUPABASE_URL: "https://qufcpvoeiyzsinbuowok.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF1ZmNwdm9laXl6c2luYnVvd29rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODc1MDYyODUsImV4cCI6MjEwMzA4MjI4NX0.c9pb6f-ewk5U6lT8rTSJVjKTppFDJt4o487zWxSOuy8",
+  SUPABASE_CAPTCHA_ENABLED: true,
+  HCAPTCHA_SITEKEY: "61eabff0-5746-47ce-b7ce-8ff06fd2d6c6"
+};
