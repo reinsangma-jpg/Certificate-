@@ -1,7 +1,0 @@
-.env
-.env.local
-.DS_Store
-node_modules/
-
-# Never let a locally-edited config with real keys get committed by accident.
-# (The tracked js/config.js should only ever contain the __PLACEHOLDER__ tokens.)
