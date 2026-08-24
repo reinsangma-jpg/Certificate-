@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071a3a">
+<meta name="description" content="NSS Certificate Portal">
+<title>NSS Certificate Generator</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge"><img id="headerNssLogo" alt="NSS logo"></div>
+      <div><small>NATIONAL SERVICE SCHEME</small><strong>NSS Certificate Generator</strong></div>
+    </div>
+    <button class="icon-btn hidden" id="logoutBtn" aria-label="Log out">⎋</button>
+    <button class="icon-btn" id="themeBtn" aria-label="Change background">✨</button>
+  </header>
+
+  <main>
+    <section class="screen active" id="authScreen">
+      <div class="hero">
+        <div class="welcome-logo"><img id="authNssLogo" alt="National Service Scheme logo"></div>
+        <div class="hero-kicker">NATIONAL SERVICE SCHEME</div>
+        <h1 id="authHeading">WELCOME BACK</h1>
+        <p id="authSubtext">Log in or create an account to generate your certificate.</p>
+      </div>
+      <div class="card">
+        <div class="class-grid" style="grid-template-columns:1fr 1fr;margin-bottom:6px">
+          <button class="choice selected" id="authTabLogin" type="button"><span>Log In</span></button>
+          <button class="choice" id="authTabSignup" type="button"><span>Sign Up</span></button>
+        </div>
+        <p class="label" style="margin-top:16px">Email</p>
+        <div class="input-wrap">
+          <input id="authEmail" class="input" type="email" autocomplete="email" spellcheck="false" placeholder="you@example.com" aria-label="Email">
+        </div>
+        <p class="label" style="margin-top:16px">Password</p>
+        <div class="input-wrap">
+          <input id="authPassword" class="input" type="password" autocomplete="current-password" placeholder="Enter your password" aria-label="Password">
+        </div>
+        <div class="field-note" id="authNote">Must be at least 6 characters.</div>
+        <div class="auth-captcha-card">
+          <div class="label">Security CAPTCHA</div>
+          <div class="captcha-row">
+            <div class="captcha-challenge" id="captchaChallenge" aria-label="CAPTCHA challenge"></div>
+            <button class="captcha-refresh" id="captchaRefresh" type="button" aria-label="Refresh CAPTCHA">↻</button>
+          </div>
+          <div class="input-wrap captcha-input"><input id="captchaInput" class="input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="Enter the number + word" aria-label="CAPTCHA answer"></div>
+          <div class="captcha-note">Enter both the number and the word shown above.</div>
+          <div class="hcaptcha-wrap" id="hcaptchaBox"></div>
+        </div>
+        <button class="primary processing-btn" id="authSubmitBtn"><span class="spinner"></span>LOG IN</button>
+        <div id="authMsg"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="verificationScreen">
+      <div class="hero">
+        <div class="welcome-logo"><img id="verificationNssLogo" alt="National Service Scheme logo"></div>
+        <div class="hero-kicker">EMAIL VERIFICATION</div>
+        <h1>CHECK YOUR EMAIL</h1>
+        <p id="verificationText">Supabase has sent a verification message. If it contains a confirmation link, open it. If it contains an OTP, enter the code below.</p>
+      </div>
+      <div class="card">
+        <p class="label">Email</p>
+        <div class="input-wrap"><input id="verificationEmail" class="input" type="email" readonly aria-label="Verification email"></div>
+        <p class="label" style="margin-top:16px">Email OTP <span style="font-weight:500;opacity:.65">(only if your Supabase email template sends an OTP)</span></p>
+        <div class="input-wrap"><input id="verificationOtp" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter OTP"></div>
+        <button class="secondary processing-btn" id="verifyOtpBtn"><span class="spinner"></span>VERIFY OTP</button>
+        <button class="primary" id="backToLoginBtn" type="button">BACK TO LOGIN</button>
+        <div id="verificationMsg"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="welcomeScreen">
+      <div class="hero">
+        <div class="welcome-logo"><img id="welcomeNssLogo" alt="National Service Scheme logo"></div>
+        <div class="hero-kicker">NATIONAL SERVICE SCHEME</div>
+        <h1>NSS CERTIFICATE GENERATOR</h1>
+        <p>Create your digital participation certificate in a few simple steps.</p>
+        <div class="info-pills">
+          <span class="info-pill">📜 Original-size download</span>
+          <span class="info-pill">📱 Mobile friendly</span>
+          <span class="info-pill">🔒 One certificate per device</span>
+        </div>
+      </div>
+      <div class="card">
+        <p class="label">Enter your name</p>
+        <div class="input-wrap">
+          <input id="nameInput" class="input" type="text" autocomplete="name" spellcheck="false" placeholder="Enter your full name" aria-label="Name">
+        </div>
+        <div class="field-note">Use the name exactly as you want it printed on the certificate.</div>
+        <div class="verify-box" id="robotBox" role="checkbox" aria-checked="false" tabindex="0" style="margin-top:15px">
+          <div class="fake-check" aria-hidden="true">✓</div>
+          <div class="verify-text">I'm not a robot</div>
+        </div>
+        <button class="primary processing-btn" id="verifyBtn"><span class="spinner"></span>CONTINUE</button>
+        <div id="welcomeMsg"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="verifiedScreen" aria-hidden="true"></section>
+
+    <section class="screen" id="detailsScreen">
+      <div class="backline"><span>Certificate Details</span><button class="link-btn" id="restartBtn">Start Over</button></div>
+      <div class="card">
+        <span class="badge">CERTIFICATE NAME</span>
+        <div class="verified-name" id="detailsName"></div>
+        <div style="margin-top:20px">
+          <p class="label">Age</p>
+          <div class="input-wrap">
+            <input id="ageInput" class="input" type="number" min="15" max="25" step="1" inputmode="numeric" placeholder="Enter your age" aria-label="Age">
+          </div>
+          <div id="ageMsg"></div>
+        </div>
+
+        <div style="margin-top:20px">
+          <p class="label">Select Class</p>
+          <div class="class-grid" id="classGrid">
+            <button class="choice" data-class="H.S"><span>H.S</span><small>NSS Member only</small></button>
+            <button class="choice" data-class="B.A 1st Semester"><span>B.A 1st Semester</span><small>NSS Member only</small></button>
+            <button class="choice" data-class="B.A 3rd Semester"><span>B.A 3rd Semester</span><small>Member or Volunteer</small></button>
+            <button class="choice" data-class="B.A 5th Semester"><span>B.A 5th Semester</span><small>Member or Volunteer</small></button>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <p class="label">Designation</p>
+          <div class="designation-grid" id="designationGrid"></div>
+          <div class="field-note">Choose the details that should be recorded with your generated certificate.</div>
+        </div>
+
+        <button class="primary processing-btn" id="previewBtn"><span class="spinner"></span>PREVIEW CERTIFICATE</button>
+        <div id="detailsMsg"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="processingScreen">
+      <div class="card process-card">
+        <div class="process-title">CERTIFICATE PROCESSING</div>
+        <div class="process-sub" id="processMessage">Preparing your NSS certificate…</div>
+        <div class="track" id="track">
+          <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+          <div class="finish"><div class="finish-icon">📜</div>CERTIFICATE<br>READY</div>
+          <div class="ground"></div>
+          <div class="runner" id="runner" aria-hidden="true">
+            <div class="hair"></div><div class="head"></div><div class="body"></div>
+            <div class="arm a1"></div><div class="arm a2"></div><div class="leg l1"></div><div class="leg l2"></div>
+          </div>
+          <div class="spark" style="left:25%;bottom:42px"></div>
+          <div class="spark" style="left:52%;bottom:58px;animation-delay:.4s"></div>
+          <div class="spark" style="left:72%;bottom:36px;animation-delay:.8s"></div>
+        </div>
+        <div class="progress-shell" aria-label="Certificate processing progress"><div class="progress-bar" id="progressBar"></div></div>
+        <div class="progress-row"><span id="progressStage">Starting</span><span id="progressPercent">0%</span></div>
+      </div>
+    </section>
+
+    <section class="screen" id="readyScreen">
+      <div class="card ready-card">
+        <div class="ready-icon">✓</div>
+        <div class="process-title">Certificate Ready</div><div class="ready-badge">✦ OFFICIAL NSS PARTICIPATION DESIGN</div>
+        <p id="readyText">Your certificate has been prepared successfully.</p>
+        <div class="cert-wrap"><canvas id="certificateCanvas" width="1536" height="864" aria-label="NSS certificate preview"></canvas></div>
+        <button class="secondary fullscreen-btn" id="viewBtn">VIEW MY CERTIFICATE</button>
+        <button class="primary" id="downloadBtn">DOWNLOAD CERTIFICATE</button>
+        <div class="meta" id="certificateMeta"></div>
+      </div>
+    </section>
+
+    <section class="screen" id="themeScreen">
+      <div class="backline"><span>Change Background</span><button class="link-btn" id="closeThemeBtn">Close</button></div>
+      <div class="card">
+        <p class="label">✨ CHOOSE A CUTE BACKGROUND</p>
+        <div class="theme-grid" id="themeGrid">
+          <button class="theme" data-theme="Cloud">☁️ Cloud</button>
+          <button class="theme" data-theme="Lavender">💜 Lavender</button>
+          <button class="theme" data-theme="Peach">🍑 Peach</button>
+          <button class="theme" data-theme="Mint">🌿 Mint</button>
+          <button class="theme" data-theme="Sky">🩵 Sky</button>
+          <button class="theme" data-theme="Rose">🌸 Rose</button>
+          <button class="theme" data-theme="Cream">🍦 Cream</button>
+          <button class="theme" data-theme="Blue">💙 Blue</button>
+        </div>
+        <button class="secondary" id="resetThemeBtn">RESET BACKGROUND</button>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <strong>© NSS Certificate Generator Site</strong><br>
+    National Service Scheme · Digital Participation Certificate<br>
+    Secure single-device generation · Mobile-first · Static hosting ready
+  </footer>
+  <div class="whatsapp-label">Need help? Chat with me</div>
+  <a class="whatsapp-float" href="https://wa.me/916000740928?text=Hello%2C%20I%20need%20help%20with%20the%20NSS%20certificate%20generator." target="_blank" rel="noopener noreferrer" aria-label="Contact on WhatsApp">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M19.11 17.23c-.28-.14-1.66-.82-1.92-.91-.26-.1-.45-.14-.64.14-.19.28-.73.91-.9 1.1-.16.19-.33.21-.61.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.4-1.65-1.56-1.93-.16-.28-.02-.43.12-.57.12-.12.28-.33.42-.49.14-.16.19-.28.28-.47.09-.19.05-.35-.02-.49-.07-.14-.64-1.54-.87-2.11-.23-.56-.46-.48-.64-.49h-.55c-.19 0-.49.07-.75.35-.26.28-.99.97-.99 2.37s1.01 2.75 1.15 2.94c.14.19 1.99 3.04 4.82 4.26.67.29 1.2.46 1.61.59.68.22 1.3.19 1.79.12.55-.08 1.66-.68 1.89-1.34.23-.66.23-1.22.16-1.34-.07-.12-.26-.19-.54-.33zM16.01 4.3c-6.46 0-11.7 5.24-11.7 11.7 0 2.06.54 4.08 1.56 5.85L4.2 27.7l5.99-1.57a11.66 11.66 0 0 0 5.82 1.55h.01c6.45 0 11.7-5.24 11.7-11.7S22.47 4.3 16.01 4.3zm0 21.42h-.01a9.68 9.68 0 0 1-4.94-1.35l-.35-.21-3.55.93.95-3.46-.23-.36a9.72 9.72 0 1 1 8.13 4.45z"/></svg>
+  </a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
