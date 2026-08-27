@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#102a43">
+  <meta name="description" content="NSS Volunteer Management & Identity Portal">
+  <title>NSS Volunteer Portal</title>
+  <link rel="icon" href="assets/nss-logo.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+  <section id="auth-view" class="auth-shell">
+    <div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div>
+    <div class="ring ring-a"></div><div class="ring ring-b"></div>
+    <main class="auth-card glass">
+      <div class="brand-lockup">
+        <img src="assets/nss-logo.svg" class="nss-logo" alt="NSS logo">
+        <div><span class="eyebrow">COLLEGE SERVICE PORTAL</span><h1>NSS Volunteer</h1><p>NATIONAL SERVICE SCHEME</p></div>
+      </div>
+      <div class="motto">“NOT ME, BUT YOU”</div>
+      <div class="tabs" role="tablist"><button class="tab active" data-auth-tab="login">Login</button><button class="tab" data-auth-tab="signup">Sign Up</button></div>
+      <form id="login-form" class="auth-form" novalidate>
+        <label>Email<input id="login-email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+        <label>Password<input id="login-password" type="password" autocomplete="current-password" placeholder="••••••••" required></label>
+        <button class="btn btn-primary btn-wide" type="submit">Enter Dashboard</button>
+        <button class="text-btn" id="forgot-btn" type="button">Forgot password / Reset password</button>
+      </form>
+      <form id="signup-form" class="auth-form hidden" novalidate>
+        <label>Full Name<input id="signup-name" type="text" autocomplete="name" placeholder="Your full name" required></label>
+        <label>Email<input id="signup-email" type="email" autocomplete="email" placeholder="you@example.com" required></label>
+        <label>Password<input id="signup-password" type="password" autocomplete="new-password" minlength="8" placeholder="At least 8 characters" required></label>
+        <button class="btn btn-primary btn-wide" type="submit">Create Account</button>
+      </form>
+      <div id="confirm-panel" class="confirm-panel hidden">
+        <img src="assets/nss-logo.svg" class="confirm-logo" alt="NSS logo">
+        <h2>Please confirm your email</h2>
+        <p>We have sent a confirmation link to your email just now. Please click the confirmation link, then return here and log in.</p>
+        <button class="btn btn-primary btn-wide" id="back-login" type="button">Back to Login</button>
+      </div>
+      <div class="auth-foot"><span>Secure sign-in powered by Supabase</span><span>•</span><span>Static GitHub Pages ready</span></div>
+    </main>
+  </section>
+
+  <section id="app-view" class="app-shell hidden">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand"><img src="assets/nss-logo.svg" alt="NSS"><div><strong>NSS Portal</strong><small>Volunteer identity</small></div></div>
+      <nav class="side-nav">
+        <button class="nav-item active" data-page="dashboard"><span>⌂</span>Dashboard</button>
+        <button class="nav-item" data-page="profile"><span>◈</span>Profile</button>
+        <button class="nav-item" data-page="certificate"><span>✦</span>Latest Certificate</button>
+      </nav>
+      <div class="sidebar-bottom"><div class="user-mini"><div class="avatar" id="avatar-initial">N</div><div><strong id="side-name">Volunteer</strong><small id="side-email">—</small></div></div><button class="nav-item logout" id="logout-btn"><span>↪</span>Logout</button></div>
+    </aside>
+    <div class="main-wrap">
+      <header class="topbar"><button id="menu-toggle" class="icon-btn" aria-label="Open menu">☰</button><div class="topbar-title"><span class="eyebrow">NATIONAL SERVICE SCHEME</span><strong id="top-user">Volunteer</strong></div><div class="top-actions"><span class="status-dot"></span><span class="desktop-only">Active session</span></div></header>
+      <main class="content">
+        <section id="page-dashboard" class="page active-page">
+          <div class="hero-panel">
+            <div class="hero-copy"><span class="eyebrow">WELCOME BACK</span><h2>Welcome, <span id="welcome-name">Volunteer</span></h2><p>Serve with purpose. Your NSS identity, profile and participation documents are kept together in one trusted space.</p><div class="hero-pills"><span>Community</span><span>Service</span><span>Leadership</span></div></div>
+            <div class="hero-art"><div class="planet"><div class="planet-ring"></div><span>NSS</span></div><div class="float-card">NOT ME,<br>BUT YOU</div></div>
+          </div>
+          <div class="section-heading"><div><span class="eyebrow">DIGITAL IDENTITY</span><h3>NSS Volunteer Identity Card</h3></div><button class="btn btn-soft" data-page="profile">Edit profile</button></div>
+          <div class="identity-stage"><article class="id-card" id="identity-card"><div class="id-top"><img src="assets/nss-logo.svg" alt="NSS logo"><div><strong>NATIONAL SERVICE SCHEME</strong><span>NSS VOLUNTEER IDENTITY CARD</span></div><div class="id-chip">NSS</div></div><div class="id-body"><div class="id-photo" id="id-initial">N</div><div class="id-details"><div><small>Name</small><strong id="id-name">Not provided</strong></div><div><small>Class</small><strong id="id-class">Not provided</strong></div><div><small>Roll No.</small><strong id="id-roll">Not provided</strong></div><div><small>Status</small><strong id="id-status">Volunteer</strong></div><div><small>Date of Birth</small><strong id="id-dob">Not provided</strong></div><div><small>College</small><strong id="id-college">Not provided</strong></div><div><small>Phone</small><strong id="id-phone">Not provided</strong></div></div></div><div class="id-bottom"><span>NOT ME, BUT YOU</span><span id="id-email">—</span></div></article></div>
+          <div class="dashboard-grid"><div class="info-card"><span class="card-icon">01</span><h4>Profile sync</h4><p>Update your details once. The identity card and certificate preview use the same Supabase profile.</p></div><div class="info-card"><span class="card-icon">02</span><h4>Certificate request</h4><p>Preview and download a digital participation template, or explicitly submit a request to the NSS office.</p></div><div class="info-card"><span class="card-icon">03</span><h4>Privacy first</h4><p>Your profile is protected by Supabase Row Level Security and is scoped to your authenticated account.</p></div></div>
+        </section>
+
+        <section id="page-profile" class="page">
+          <div class="page-intro"><div><span class="eyebrow">YOUR DETAILS</span><h2>Volunteer Profile</h2><p>Keep your NSS identity information accurate. Changes sync to your digital identity card immediately.</p></div></div>
+          <div class="clay-card"><div class="profile-head"><div class="clay-avatar" id="profile-initial">N</div><div><h3 id="profile-heading">Volunteer</h3><p id="profile-account-email">—</p></div></div><form id="profile-form" class="profile-grid"><label>Name<input id="profile-name" type="text" required></label><label>Class<input id="profile-class" type="text" placeholder="e.g. B.A. 3rd Semester"></label><label>Roll No.<input id="profile-roll" type="text"></label><label>NSS Volunteer / Member<select id="profile-status"><option value="Volunteer">Volunteer</option><option value="Member">Member</option></select></label><label>Date of Birth<input id="profile-dob" type="date"></label><label>College Name<input id="profile-college" type="text"></label><label>Phone Number<input id="profile-phone" type="tel" inputmode="tel" placeholder="10-digit mobile number"></label><div class="profile-save"><button class="btn btn-primary" type="submit">Edit / Save Details</button></div></form></div>
+          <div class="notice"><strong>Privacy note:</strong> Only your authenticated account can read or update this profile when the supplied RLS policies are installed.</div>
+        </section>
+
+        <section id="page-certificate" class="page">
+          <div class="page-intro"><div><span class="eyebrow">DOCUMENT CENTER</span><h2>Latest Certificate</h2><p>Your name and identity details are pulled from your profile. Only the contact number below is entered specifically for this certificate request.</p></div></div>
+          <div class="certificate-layout"><div class="certificate-controls clay-card"><label>Mobile Number<input id="certificate-mobile" type="tel" inputmode="tel" placeholder="Enter mobile number"></label><div class="button-stack"><button class="btn btn-primary" id="preview-cert">Preview Certificate</button><button class="btn btn-outline" id="request-cert">Submit Request by Email</button><button class="btn btn-soft" id="download-cert">Download</button></div><div class="certificate-note">This is a digital participation-certificate template. An official certificate should be issued or validated by the responsible NSS Programme Officer or college authority.</div></div><div class="certificate-preview-wrap"><div id="certificate-canvas" class="certificate-canvas"><img src="assets/certificate-template.jpg" alt="Certificate template"><div class="cert-cover-title">CERTIFICATE OF PARTICIPATION</div><img class="cert-logo" src="assets/nss-logo.svg" alt="NSS logo"><div class="cert-presented">THIS CERTIFICATE IS PROUDLY PRESENTED TO</div><div class="cert-name" id="cert-name">Volunteer Name</div><div class="cert-statement">For active participation and contribution to National Service Scheme activities and community service.</div><div class="cert-date" id="cert-date">27 AUGUST 2026</div><div class="cert-sign sign-one">NSS PROGRAMME OFFICER</div><div class="cert-sign sign-two">COLLEGE AUTHORITY</div></div></div></div>
+        </section>
+      </main>
+    </div>
+  </section>
+
+  <dialog id="reset-dialog" class="modal"><form method="dialog" id="reset-form"><button class="modal-close" value="cancel" aria-label="Close">×</button><span class="eyebrow">ACCOUNT RECOVERY</span><h2>Reset your password</h2><p>Enter the email linked to your NSS account.</p><label>Email<input id="reset-email" type="email" required placeholder="you@example.com"></label><button class="btn btn-primary btn-wide" value="default" type="submit">Send Reset Link</button></form></dialog>
+
+  <form id="formsubmit-form" action="https://formsubmit.co/reinsangma@gmail.com" method="POST" class="hidden"><input type="hidden" name="_subject" id="fs-subject"><input type="hidden" name="_captcha" value="false"><input type="hidden" name="_template" value="table"><input type="hidden" name="Name" id="fs-name"><input type="hidden" name="Contact number" id="fs-contact"><input type="hidden" name="Supabase account email" id="fs-email"><input type="hidden" name="Class" id="fs-class"><input type="hidden" name="Roll No." id="fs-roll"><input type="hidden" name="NSS Volunteer / Member" id="fs-status"><input type="hidden" name="Date of Birth" id="fs-dob"><input type="hidden" name="College Name" id="fs-college"><input type="hidden" name="Profile phone number" id="fs-profile-phone"><input type="hidden" name="Request date" id="fs-date"></form>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
